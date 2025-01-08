@@ -69,6 +69,10 @@ pub enum Llama {
     Llama3Instruct,
     /// Llama-3.1-8B-Instruct.
     Llama31Instruct,
+    /// Llama-3.2-3B-Instruct.
+    Llama323bInstruct,
+    /// Llama-3.2-1B-Instruct.
+    Llama321bInstruct,
     /// TinyLlama-1.1B Chat v1.0.
     TinyLlama,
 }
@@ -90,6 +94,16 @@ impl ModelMeta for Llama {
                 name: "Llama-3.1-8B-Instruct",
                 model: "https://huggingface.co/tracel-ai/llama-3.1-8b-instruct-burn/resolve/main/model.mpk?download=true",
                 tokenizer: "https://huggingface.co/tracel-ai/llama-3.1-8b-instruct-burn/resolve/main/tokenizer.model?download=true",
+            },
+            Self::Llama323bInstruct => Pretrained {
+                name: "Llama-3.2-3B-Instruct",
+                model: "https://huggingface.co/tracel-ai/llama-3.2-3b-instruct-burn/resolve/main/model.mpk?download=true",
+                tokenizer: "https://huggingface.co/tracel-ai/llama-3.2-3b-instruct-burn/resolve/main/tokenizer.model?download=true",
+            },
+            Self::Llama321bInstruct => Pretrained {
+                name: "Llama-3.2-1B-Instruct",
+                model: "https://huggingface.co/tracel-ai/llama-3.2-1b-instruct-burn/resolve/main/model.mpk?download=true",
+                tokenizer: "https://huggingface.co/tracel-ai/llama-3.2-1b-instruct-burn/resolve/main/tokenizer.model?download=true",
             },
             Self::TinyLlama => Pretrained {
                 name: "TinyLlama-1.1B",

@@ -42,7 +42,7 @@ pub struct Config {
 
     /// The Llama 3 model version.
     #[cfg(feature = "llama3")]
-    #[arg(long, default_value = "llama-3.1-8b-instruct")]
+    #[arg(long, default_value = "llama-3.2-1b-instruct")]
     model_version: Llama3,
 }
 
@@ -56,6 +56,12 @@ enum Llama3 {
     /// Llama-3.1-8B-Instruct.
     #[value(name = "llama-3.1-8b-instruct")]
     V31Instruct,
+    /// Llama-3.2-1B-Instruct.
+    #[value(name = "llama-3.2-1b-instruct")]
+    V321bInstruct,
+    /// Llama-3.2-3B-Instruct.
+    #[value(name = "llama-3.2-3b-instruct")]
+    V323bInstruct,
 }
 
 pub fn generate<B: Backend, T: Tokenizer>(
@@ -123,6 +129,12 @@ pub fn chat<B: Backend>(args: Config, device: Device<B>) {
             Llama3::V31Instruct => {
                 LlamaConfig::llama3_1_8b_pretrained::<B>(args.max_seq_len, &device).unwrap()
             }
+            Llama3::V321bInstruct => {
+                LlamaConfig::llama3_2_1b_pretrained::<B>(args.max_seq_len, &device).unwrap()
+            }
+            Llama3::V323bInstruct => {
+                LlamaConfig::llama3_2_3b_pretrained::<B>(args.max_seq_len, &device).unwrap()
+            }
         };
         println!("Processing prompt: {}", prompt);
 
@@ -186,13 +198,15 @@ mod wgpu {
 #[cfg(feature = "cuda")]
 mod cuda {
     use super::*;
-    use burn::backend::{cuda_jit::CudaDevice, CudaJit};
+    use burn::{
+        backend::{cuda_jit::CudaDevice, CudaJit},
+        tensor::f16,
+    };
 
     pub fn run(args: Config) {
         let device = CudaDevice::default();
 
-        // NOTE: compilation errors in f16
-        chat::<CudaJit<f32, i32>>(args, device);
+        chat::<CudaJit<f16, i32>>(args, device);
     }
 }
 

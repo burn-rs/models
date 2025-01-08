@@ -72,6 +72,7 @@ pub struct Transformer<B: Backend> {
     tok_embeddings: Embedding<B>,
     layers: Vec<TransformerBlock<B>>,
     norm: RmsNorm<B>,
+    // NOTE: Starting with Llama 3.2, the weights of the output layer are tied with the embedding
     output: Linear<B>,
 }
 
@@ -389,5 +390,33 @@ impl<B: Backend> MultiHeadAttention<B> {
                 .expand([batch_size, num_kv_heads, n_rep, seq_len, head_dim])
                 .reshape([batch_size, num_kv_heads * n_rep, seq_len, head_dim])
         }
+    }
+}
+
+#[cfg(test)]
+#[cfg(any(feature = "cuda", feature = "tch-gpu"))]
+mod tests {
+    use super::*;
+    use crate::tests::*;
+
+    use burn::tensor::TensorData;
+
+    #[test]
+    fn test_rms_norm() {
+        let device = Default::default();
+
+        let rms = RmsNormConfig::new(4).with_epsilon(1e-5).init(&device);
+        let input = TestTensor::<3>::from([[
+            [0.0025997162, 0.0030002594, -0.006000519, 0.006000519],
+            [0.0010004044, 0.00080013275, 0.0015001297, -0.01600647],
+        ]]);
+
+        let output = rms.forward(input);
+        let expected = TensorData::from([[
+            [0.45996094, 0.5307617, -1.0615234, 1.0615234],
+            [0.11553955, 0.09240723, 0.17321777, -1.8486328],
+        ]]);
+
+        output.into_data().assert_approx_eq(&expected, 3);
     }
 }

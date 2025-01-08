@@ -23,8 +23,10 @@ wgpu = ["burn/wgpu"]
 import = ["burn-import"]
 
 [dependencies]
-burn = { version = "0.14.0", default-features = false, features = ["std"] }
-burn-import = { version = "0.14.0", optional = true }
+burn = { version = "0.16.0", default-features = false, features = ["std", "fusion"] }
+burn-import = { version = "0.16.0", optional = true }
+cubecl-runtime = { version = "0.4.0", features = ["channel-mpsc"] } # missing feature flag
+
 itertools = { version = "0.12.1", default-features = false, features = [
     "use_alloc",
 ] }
@@ -49,5 +51,11 @@ rand = { version = "0.8.5", default-features = false, features = [
 ] } # std_rng is for no_std
 
 [dev-dependencies]
-burn = { version = "0.14.0", default-features = false }
+burn = { version = "0.16.0", default-features = false }
 clap = { version = "4.5.4", features = ["derive"] }
+
+# Until burn 0.16.0 is released we use a compatible git revision
+[patch.crates-io]
+burn = { git = "https://github.com/tracel-ai/burn", rev = "da8de562b0f67869c8a8c629b8535f938fd317f9" }
+burn-import = { git = "https://github.com/tracel-ai/burn", rev = "da8de562b0f67869c8a8c629b8535f938fd317f9" }
+cubecl-runtime = { git = "https://github.com/tracel-ai/cubecl", rev = "5a3f9ac9f6178c4f76570535bf5e42ef12a19a3d" }
